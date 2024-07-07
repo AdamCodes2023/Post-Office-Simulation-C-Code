@@ -127,4 +127,56 @@ void PostOffice::normalDayLoop() {
     } //End if (employeeTaskTime == 0)
     //ONE MINUTE PASSES!
   } //End for (int runTime = time; runTime > 0; runTime--)
+  cout << "POST OFFICE DOORS ARE CLOSED!" << endl;
+  //RECORD THE NUMBER OF CUSTOMERS LEFT AT THE DOOR OF THE POST OFFICE!
+  bool customerBeingHelped = false;
+  if (employeeBusy == true) {
+    customerBeingHelped = true;
+  } //End if (employeeBusy == true)
+  customersPastWorkDay = getVectorSize(queue);
+  //TAKE CARE OF THE REST OF THE POST OFFICE CUSTOMERS IN THE QUEUE!
+  int runTime = 0;
+  bool dayFinished = false;
+  //CHECK TO SEE IF THE POST OFFICE IS ABLE TO CLOSE!
+  //POSTAL EMPLOYEE IS NOT BUSY AND THE QUEUE IS EMPTY!
+  if (employeeBusy == false && getVectorSize(queue) == 0) {
+      dayFinished = true;
+  } //End if (employeeBusy == false && getVectorSize(queue) == 0)
+  while (dayFinished != true) {
+    //POST THE TIME WORKED PAST THE NORMAL POST OFFICE WORK DAY!
+    cout << endl << "TIME OVER: " << runTime << endl << endl;
+    //GENERATE THE POSTAL EMPLOYEE'S TASK FOR THE NEXT CUSTOMER!
+    //REMOVE THE CUSTOMER FROM THE QUEUE ONCE THE POSTAL EMPLOYEE COMPLETES THE TASK!
+    if (employeeBusy == false) {
+      //EMPTY QUEUE CAUSES POST OFFICE TO CLOSE BEFORE THE FINAL CUSTOMER IS FINISHED BEING SERVED BY THE POSTAL EMPLOYEE!
+      if (getVectorSize(queue) > 0) {
+        setPrivateIntValue(employeeTaskTime, employeeCycle());
+        totalTaskTime += getPrivateIntValue(employeeTaskTime);
+        totalTasks++;
+        employeeBusy = true;
+        removeFromVector(queue, 1);
+        addToVector(departureTimes, runTime);
+        totalCustomers++;
+        cout << "POSTAL EMPLOYEE IS BUSY!" << endl;
+        cout << "CUSTOMER #" << totalCustomers << " WAITED " << getVectorElement(arrivalTimes, totalCustomers - 1) - getVectorElement(departureTimes, totalCustomers - 1) << " MINUTE(S)!" << endl;
+      } //End if (getVectorSize(queue) != 0)
+    } //End if (employeeBusy == false)
+    //POSTAL EMPLOYEE WORKS ON HIS TASK!
+    decrementPrivateIntValue(employeeTaskTime, 1);
+    //FREE THE POSTAL EMPLOYEE FROM THE CURRENT TASK!
+    if (getPrivateIntValue(employeeTaskTime) == 0) {
+      employeeBusy = false;
+      cout << "A PERSON DEPARTS! THE POSTAL EMPLOYEE IS FREE!" << endl;
+    } //End if (employeeTaskTime == 0)
+
+    //CHECK TO SEE IF THE POST OFFICE IS ABLE TO CLOSE!
+    //POSTAL EMPLOYEE IS NOT BUSY AND THE QUEUE IS EMPTY!
+    if (employeeBusy == false && getVectorSize(queue) == 0) {
+      dayFinished = true;
+      cout << endl;
+    } else {
+      //ONE MINUTE PASSES!
+      runTime--;
+    } //End if (employeeBusy == false && getVectorSize(queue) == 0)
+  } //End while (queue.size() != 0)  
 }
