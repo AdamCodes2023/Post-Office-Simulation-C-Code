@@ -178,5 +178,60 @@ void PostOffice::normalDayLoop() {
       //ONE MINUTE PASSES!
       runTime--;
     } //End if (employeeBusy == false && getVectorSize(queue) == 0)
-  } //End while (queue.size() != 0)  
-}
+  } //End while (queue.size() != 0)
+  //GENERATE THE WAIT TIMES FOR EACH POST OFFICE CUSTOMER (ARRIVAL - DEPARTURE)!
+  //REMOVE CUSTOMERS THAT DO NOT WAIT (0 MINUTE WAIT TIME)!
+  for (int check = 0; check < getVectorSize(departureTimes); check++) {
+    if (getVectorElement(arrivalTimes, check) - getVectorElement(departureTimes, check) != 0) {
+      addToVector(waitTimes, getVectorElement(arrivalTimes, check) - getVectorElement(departureTimes, check));
+    } //End if (arrivalTimes[check] - departureTimes[check] != 0)
+  } //End for (int check = 0; check < departureTimes.size(); check++)
+  
+  //CREATE VARIABLES FOR WAIT TIME CALCULATIONS!
+  int minimumWaitTime = 0;
+  int maximumWaitTime = 0;
+  int totalWaitTime = 0;
+  if (getVectorSize(waitTimes) > 0) {
+    minimumWaitTime = getVectorElement(waitTimes, 0);
+    maximumWaitTime = getVectorElement(waitTimes, 0);
+  } //End if (getVectorSize(waitTimes) > 0)
+  
+  //FIND THE LONGEST, SHORTEST, AND AVERAGE WAIT TIMES!
+  for (int check = 0; check < getVectorSize(waitTimes); check++) {
+    if (getVectorElement(waitTimes, check) < minimumWaitTime) {
+      minimumWaitTime = getVectorElement(waitTimes, check);
+    } //End if (waitTimes[check] < minimumWaitTime)
+    if (getVectorElement(waitTimes, check) > maximumWaitTime) {
+      maximumWaitTime = getVectorElement(waitTimes, check);
+    } //End if (waitTimes[check] > maximumWaitTime)
+    totalWaitTime += getVectorElement(waitTimes, check);
+  } //End for (int check = 0; check < waitTimes.size(); check++)
+  //FIND THE AVERAGE POSTAL EMPLOYEE TASK TIME!
+  double averageTaskTime = (double)totalTaskTime / (double)totalTasks;
+  double averageWaitTime = (double)totalWaitTime / (double)getVectorSize(waitTimes);
+  //OUTPUT DIFFERENT CALCULATIONS FOR THE POST OFFICE WORK DAY!
+  cout << "POST OFFICE IS CLOSED!" << endl << endl;
+  cout << "TOTAL NUMBER OF PEOPLE PROCESSED: " << totalCustomers << endl;
+  cout << "LONGEST WAIT TIME: " << maximumWaitTime << endl;
+  cout << "SHORTEST WAIT TIME: " << minimumWaitTime << endl;
+  cout << "AVERAGE WAIT TIME: " << averageWaitTime << endl;
+  cout << "AVERAGE TASK TIME: " << averageTaskTime << endl;
+  if (customerBeingHelped == true) {
+    cout << "CUSTOMERS LEFT AT THE DOOR: " << customersPastWorkDay << " + 1 CUSTOMER BEING HELPED BY THE POSTAL EMPLOYEE!" << endl;
+  } else {
+    cout << "CUSTOMERS LEFT AT THE DOOR: " << customersPastWorkDay << endl;
+  } //End if (customerBeingHelped == true)
+
+  //OUTPUT THE WAIT TIMES FOR EACH POST OFFICE CUSTOMER!
+  cout << "WAIT TIMES FOR POST OFFICE CUSTOMERS WHO ACTUALLY WAITED FOR SERVICE (USED IN CALCULATIONS): " << endl;
+  for (int i = 0; i < getVectorSize(waitTimes); i++) {
+    cout << getVectorElement(waitTimes, i) << ' ';
+  } //End for (int i = 0; i < waitTimes.size(); i++)
+  cout << endl;
+
+  cout << "WAIT TIMES FOR ALL POST OFFICE CUSTOMERS (NOT USED IN CALCULATIONS): " << endl;
+  for (int i = 0; i < getVectorSize(departureTimes); i++) {
+    cout << getVectorElement(arrivalTimes, i) - getVectorElement(departureTimes, i) << ' ';
+  } //End for (int i = 0; i < departureTimes.size(); i++)
+  cout << endl;
+} //End void PostOffice::normalDayLoop()
